@@ -1,5 +1,5 @@
-# Personagem: classe mae 
-# Heroi: controlado pelo usuario 
+# Personagem: classe mae
+# Heroi: controlado pelo usuario
 # Inimigo: adversario do usuario
 
 class Personagem:
@@ -18,9 +18,17 @@ class Personagem:
         return self.__nivel
 
     def exibir_informacoes(self):
-        print(f'Nome: {self.__nome}')
-        print(f'Vida: {self.__vida}')
-        print(f'Nivel: {self.__nivel}')
+        return f"Nome: {self.get_nome()}, Vida: {self.get_vida()}, Nível: {self.get_nivel()}"
+
+    def receber_dano(self, dano):
+        """Diminui a vida do personagem, sem deixar ficar negativa."""
+        self.__vida = max(0, self.__vida - dano)
+
+    def atacar(self, alvo):
+        """Método para realizar um ataque em outro personagem."""
+        dano = self.get_nivel() * 5
+        alvo.receber_dano(dano)
+        print(f"{self.get_nome()} atacou {alvo.get_nome()} causando {dano} de dano!")
 
 
 class Heroi(Personagem):
@@ -32,8 +40,13 @@ class Heroi(Personagem):
         return self.__habilidade
 
     def exibir_informacoes(self):
-        super().exibir_informacoes()
-        print(f'Habilidade: {self.get_habilidade()}')
+        return f"{super().exibir_informacoes()}, Habilidade: {self.get_habilidade()}"
+
+    def ataque_especial(self, alvo):
+        """Ataque especial: causa o dobro do dano normal."""
+        dano = self.get_nivel() * 10
+        alvo.receber_dano(dano)
+        print(f"{self.get_nome()} usou {self.get_habilidade()} em {alvo.get_nome()} causando {dano} de dano!")
 
 
 class Inimigo(Personagem):
@@ -45,8 +58,7 @@ class Inimigo(Personagem):
         return self.__tipo
 
     def exibir_informacoes(self):
-        super().exibir_informacoes()
-        print(f'Tipo: {self.get_tipo()}')
+        return f"{super().exibir_informacoes()}, Tipo: {self.get_tipo()}"
 
 
 class Jogo:
@@ -56,15 +68,33 @@ class Jogo:
         self.inimigo = Inimigo(nome="Morcego", vida=50, nivel=3, tipo="Voador")
 
     def iniciar_batalha(self):
-        """"Inicia a batalha entre o herói e o inimigo, exibindo suas informações e iniciando o combate."""
+        """Inicia a batalha entre o herói e o inimigo."""
         print("Batalha iniciada!")
         while self.heroi.get_vida() > 0 and self.inimigo.get_vida() > 0:
             print("\nInformações dos Personagens:")
             print(self.heroi.exibir_informacoes())
             print(self.inimigo.exibir_informacoes())
 
-            input("Pressione Enter para o herói atacar...")
-            escolha = input("Escolha a ação do herói (1 - Atacar, 2 - Ataque Especial): ")
+            escolha = input("\nEscolha a ação do herói (1 - Atacar, 2 - Ataque Especial): ")
+
+            if escolha == "1":
+                self.heroi.atacar(self.inimigo)
+            elif escolha == "2":
+                self.heroi.ataque_especial(self.inimigo)
+            else:
+                print("Escolha inválida. Escolha novamente.")
+                continue  # volta ao início sem o inimigo atacar
+
+            # Turno do inimigo (só se ainda estiver vivo)
+            if self.inimigo.get_vida() > 0:
+                self.inimigo.atacar(self.heroi)
+
+        print("\nFim da batalha!")
+        if self.heroi.get_vida() > 0:
+            print(f"{self.heroi.get_nome()} venceu!")
+        else:
+            print(f"{self.inimigo.get_nome()} venceu!")
+
 
 # Criar instância do jogo e iniciar a batalha
 jogo = Jogo()
