@@ -26,7 +26,7 @@ class Personagem:
         self.__vida = max(0, self.__vida - dano)
 
     def atacar(self, alvo):
-        """Ataque normal: dano aleatório baseado no nível."""
+        """Método para realizar um ataque em outro personagem."""
         dano = random.randint(self.get_nivel() * 5, self.get_nivel() * 10)
         alvo.receber_dano(dano)
         print(f"{self.get_nome()} atacou {alvo.get_nome()} causando {dano} de dano!")
@@ -44,8 +44,8 @@ class Heroi(Personagem):
         return f"{super().exibir_informacoes()}, Habilidade: {self.get_habilidade()}"
 
     def ataque_especial(self, alvo):
-        """Ataque especial: dano aleatório maior que o ataque normal."""
-        dano = random.randint(self.get_nivel() * 8, self.get_nivel() * 15)
+        """Ataque especial: causa o dobro do dano normal."""
+        dano = self.get_nivel() * 10
         alvo.receber_dano(dano)
         print(f"{self.get_nome()} usou {self.get_habilidade()} em {alvo.get_nome()} causando {dano} de dano!")
 
